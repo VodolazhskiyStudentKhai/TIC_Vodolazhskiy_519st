@@ -1,4 +1,5 @@
 import numpy
+import numpy as np
 import scipy
 import matplotlib.pyplot as plt
 
@@ -74,19 +75,7 @@ def build_graphic():
         discrete_signal_after_filers += [list(filtered_signal2)]
         ...
 
-    e1 = discrete_signal_after_filers - filtered_signal
-    print(e1)
-    print("______________________")
-
     x1 = [2, 4, 8, 16]
-    e2 = e1[0][0:len(x1)]
-    signal_noise = numpy.var(e1)/numpy.var(filtered_signal)
-    signal_noise2 = []
-    for i in range(len(x1)):
-        signal_noise2.append(signal_noise - e1[0][i])
-
-    print(x1)
-    print(signal_noise)
     x_lab = "Час (секунд)"
     y_lab = "Амплітуда сигналу"
     title_disc = "Сигнал з кроком дискретизації Dt = (2, 4, 8, 16)"
@@ -94,9 +83,73 @@ def build_graphic():
     draw2(time_line_ox, discrete_signals, x_lab, y_lab, title_disc, "графік 3")
     draw2(freq_countdown, discrete_spectrums, x_lab, "Амплітуда спектру", title_disc, "графік 4")
     draw2(time_line_ox, discrete_signal_after_filers, x_lab, y_lab, title_disc, "графік 5")
-    draw1(x1, e2, "Крок дискретизації", "Дисперсія", "Залежність дисперсії від кроку дискретизації", "графік 6")
-    draw1(x1, signal_noise2, "Крок дискретизації", "ССШ", "Залежність дисперсії від кроку дискретизації", "графік 7")
 
+    dispersions = []
+    signal_noise = []
+    for i in range(len(x1)):
+        e1 = discrete_signal_after_filers[i] - filtered_signal
+        dispersion = numpy.var(e1)
+        dispersions.append(dispersion)
+        signal_noise.append(numpy.var(filtered_signal) / dispersion)
+        ...
+
+    draw1(x1, dispersions, "Крок дискретизації", "Дисперсія", "Залежність дисперсії від кроку дискретизації",
+          "графік 6")
+    draw1(x1, signal_noise, "Крок дискретизації", "ССШ", "Залежність відношення сигнал-шум від кроку дискретизації",
+          "графік 7")
+# Практична робота №4
+    bits_list = []
+    quantize_signals = []
+    num = 0
+    x2 = [4, 16, 64, 256]
+    for m in x2:
+        delta = (numpy.max(filtered_signal) - numpy.min(filtered_signal)) / (m - 1)
+        quantize_signal = delta * np.round(filtered_signal / delta)
+        quantize_signals.append(list(quantize_signal))
+        quantize_levels = numpy.arange(numpy.min(quantize_signal), numpy.max(quantize_signal) + 1, delta)
+        quantize_bit = numpy.arange(0, m)
+        quantize_bit = [format(bits, '0' + str(int(numpy.log(m) / numpy.log(2))) + 'b') for bits in quantize_bit]
+        quantize_table = numpy.c_[quantize_levels[:m], quantize_bit[:m]]
+        fig, ax = plt.subplots(figsize=(14 / 2.54, m / 2.54))
+        table = ax.table(cellText=quantize_table, colLabels=['Значення сигналу', 'Кодова послідовність'],
+                         loc='center')
+        table.set_fontsize(14)
+        table.scale(1, 2)
+        ax.axis('off')
+        fig.savefig('./figures/' + 'Таблиця квантування для %d рівнів ' % m + '.png', dpi=600)
+        bits = []
+        for signal_value in quantize_signal:
+            for index, value in enumerate(quantize_levels[:m]):
+                if numpy.round(numpy.abs(signal_value - value), 0) == 0:
+                    bits.append(quantize_bit[index])
+                    break
+
+        bits = [int(item) for item in list(''.join(bits))]
+        bits_list.append(bits)
+        fig, ax = plt.subplots(figsize=(21 / 2.54, 14 / 2.54))
+        ax.step(numpy.arange(0, len(bits)), bits, linewidth=0.1)
+        ax.set_xlabel("Біти", fontsize=14)
+        ax.set_ylabel("Амплітуда сигналу", fontsize=14)
+        plt.title(f'Кодова послідовність при кількості рівнів квантування {m}', fontsize=14)
+        ax.grid()
+        fig.savefig('./figures/' + 'графік %d ' % (8 + num) + '.png', dpi=600)
+        num += 1
+        ...
+    dispersions = []
+    signal_noise = []
+    for i in range(len(x2)):
+        e1 = quantize_signals[i] - filtered_signal
+        dispersion = numpy.var(e1)
+        dispersions.append(dispersion)
+        signal_noise.append(numpy.var(filtered_signal) / dispersion)
+        ...
+
+    draw2(time_line_ox, quantize_signals, "Час(сек)", "Амплітуда сигналу",
+          "Цифрові сигнали з рівнями квантування (4, 16, 64, 256)", "графік 12")
+    draw1(x2, dispersions, "Кількість рівнів квантування", "Дисперсія",
+          "Залежність дисперсії від кількості рівнів квантування", "графік 13")
+    draw1(x2, signal_noise, "Кількість рівнів квантування", "ССШ",
+          "Залежність відношення сигнал-шум від кількості рівнів квантування", "графік 14")
     ...
 
 
@@ -106,6 +159,7 @@ def draw2(x, y, x_lab: str, y_lab: str, title: str, file_name: str):
     for i in range(0, 2):
         for j in range(0, 2):
             ax[i][j].plot(x, y[s], linewidth=1)
+            ax[i][j].grid()
             s += 1
             ...
         ...
