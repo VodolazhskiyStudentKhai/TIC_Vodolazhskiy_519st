@@ -19,10 +19,8 @@ def lossless_comp():
             abs(prob - main_probability) < 0.05 * main_probability
             for prob in probab.values()
         )
-        if equality == main_probability:
-            u = "рівна"
-        else:
-            u = "нерівна"
+        u = "рівна" if equality == main_probability else "нерівна"
+
         entrop = -sum(p * math.log2(p) for p in probab.values())
         if sequence_size_alphabet > 1:
             s_ex = 1 - entrop / math.log2(sequence_size_alphabet)
@@ -155,10 +153,8 @@ def lossless_comp():
         abs(prob - mean_prob) < 0.05 * mean_prob
         for prob in probability.values()
     )
-    if equal:
-        uniform = "рівна"
-    else:
-        uniform = "нерівна"
+    uniform = "рівна" if equal else "нерівна"
+
     entropy = -sum(p * math.log2(p) for p in probability.values())
     if sequence_size_alphabet > 1:
         source_exc = 1 - entropy / math.log2(sequence_size_alphabet)
