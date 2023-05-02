@@ -3,7 +3,7 @@ import collections
 import math
 from matplotlib import pyplot as plt
 
-open("results_rle_lzw.txt", "w")
+open("results_rle_lzw.txt", "w", encoding="utf-8")
 result_list = []
 n_seq = 100
 
@@ -44,13 +44,13 @@ def encode_lzw(sequence):
             dt[n] = len(dt)
             b = 16 if dt[el] < 65536 else math.ceil(math.log2(len(dt)))
             el = char
-            with open("results_rle_lzw.txt", "a") as f:
+            with open("results_rle_lzw.txt", "a", encoding="utf-8") as f:
                 f.write(f"Code: {dt[el]}, Element: {el}, Bits: {b}\n")
                 f.close()
             max_size = max_size + b
     last = 16 if dt[el] < 65536 else math.ceil(math.log2(len(dt)))
     max_size = max_size + last
-    with open("results_rle_lzw.txt", "a") as f:
+    with open("results_rle_lzw.txt", "a", encoding="utf-8") as f:
         f.write(f"Code: {dt[el]}, Element: {el}, Bits: {last}\n")
     res.append(dt[el])
     return res, max_size
@@ -86,7 +86,7 @@ def decode_lzw(sequence):
 
 
 def start():
-    with open("sequence.txt", "r") as file:
+    with open("sequence.txt", "r", encoding="utf-8") as file:
         first_seq = ast.literal_eval(file.read())
         first_seq = [i.strip("[]',") for i in first_seq]
         file.close()
@@ -96,22 +96,22 @@ def start():
         prob = {symbol: count / n_seq for symbol, count in counter.items()}
         entropy = -sum(p * math.log2(p) for p in prob.values())
 
-        file = open("results_rle_lzw.txt", "a")
+        file = open("results_rle_lzw.txt", "a", encoding="utf-8")
         file.write('Оригінальна послідовність: {0}\n'.format(str(seq)))
         file.write('Розмір оригінальної послідовності: {0} bits\n'.format(str(len(seq) * 16)))
-        file.write('Ентропія: {0}\n'.format(str(entropy)))
+        file.write('Ентропія: {0}\n'.format(round(entropy, 2)))
         file.write('\n')
         file.close()
 
         encoded_seq, encoded = encode_rle(seq)
         decoded_seq = decode_rle(encoded)
         total_rle = len(encoded_seq) * 16
-        comp_ratio_rle = round((len(seq) / len(encoded_seq)), 2)
+        comp_ratio_rle = round((len(seq) / len(encoded_seq)), 3)
 
         if comp_ratio_rle < 1:
             comp_ratio_rle = '-'
 
-        file = open("results_rle_lzw.txt", "a")
+        file = open("results_rle_lzw.txt", "a", encoding="utf-8")
         file.write(
             '_________________________________________Кодування_RLE_______________________________________' + '\n')
         file.write('Закодована RLE послідовність: ' + str(encoded_seq) + '\n')
@@ -119,12 +119,12 @@ def start():
         file.write('Коефіцієнт стиснення RLE: ' + str(comp_ratio_rle) + '\n')
         file.close()
 
-        file = open("results_rle_lzw.txt", "a")
+        file = open("results_rle_lzw.txt", "a", encoding="utf-8")
         file.write('Декодована RLE послідовність: ' + str(decoded_seq) + '\n')
         file.write('Розмір декодованої RLE послідовності: ' + str(len(decoded_seq) * 16) + ' bits' + '\n')
         file.close()
 
-        with open("results_rle_lzw.txt", "a") as file:
+        with open("results_rle_lzw.txt", "a", encoding="utf-8") as file:
             file.write(
                 '_________________________________________Кодування_LZW_________________________________________'
                 + '\n')
@@ -133,11 +133,11 @@ def start():
                 + '\n')
 
         result_encoded, size = encode_lzw(seq)
-        with open("results_rle_lzw.txt", "a") as file:
+        with open("results_rle_lzw.txt", "a", encoding="utf-8") as file:
             file.write('________________________________________________________________________________' + '\n')
             file.write(f"Закодована LZW послідовність:{''.join(map(str, result_encoded))} \n")
             file.write(f"Розмір закодованої LZW послідовності: {size} bits \n")
-            compression_ratio_lzw = round((len(seq) * 16 / size), 2)
+            compression_ratio_lzw = round((len(seq) * 16 / size), 3)
 
             if compression_ratio_lzw < 1:
                 compression_ratio_lzw = '-'
@@ -148,13 +148,13 @@ def start():
             file.close()
 
         decoded_result_lzw = decode_lzw(result_encoded)
-        with open("results_rle_lzw.txt", "a") as file:
+        with open("results_rle_lzw.txt", "a", encoding="utf-8") as file:
             file.write(f"Декодована LZW послідовність:{''.join(map(str, decoded_result_lzw))} \n")
             file.write(f"Розмір декодованої LZW послідовності: {len(decoded_result_lzw) * 16} bits \n ")
             file.write('\n' + '\n' + '\n' + '\n' + '\n')
             file.close()
 
-        result_list.append([round(entropy, 2), comp_ratio_rle, compression_ratio_lzw])
+        result_list.append([round(entropy, 3), comp_ratio_rle, compression_ratio_lzw])
 
     fig, ax = plt.subplots(figsize=(14 / 1.54, 8 / 1.54))
     headers = ['Ентропія', 'КС RLE', 'КС LZW']

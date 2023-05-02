@@ -12,7 +12,7 @@ def lossless_comp():
         counter = collections.Counter(s)
         probab = {symbol: count / n_seq for symbol, count in counter.items()}
         probability_string = ", ".join(
-            [f"{symbol}={prob:.4f}" for symbol, prob in probab.items()]
+            [f"{symbol}={prob:.2f}" for symbol, prob in probab.items()]
         )
         main_probability = sum(probab.values()) / len(probab)
         equality = all(
@@ -53,7 +53,7 @@ def lossless_comp():
     results.append(
         [sequence_size_alphabet, round(entropy, 2), round(source_exc, 2), uniform]
     )
-    write(prob_str, mean_prob, uniform, entropy, source_exc)
+    write(text, prob_str, mean_prob, uniform, entropy, source_exc)
 
     # №2
     list2 = ["В", "о", "д", "о", "л", "а", "ж", "с", "ь", "к", "и", "й"]
@@ -76,7 +76,7 @@ def lossless_comp():
         [sequence_size_alphabet, round(entropy, 2), round(source_exc, 2), uniform]
     )
 
-    write(prob_str, mean_prob, uniform, entropy, source_exc)
+    write(text, prob_str, mean_prob, uniform, entropy, source_exc)
 
     # №3
     os_3 = list(os_2)
@@ -98,7 +98,7 @@ def lossless_comp():
         [sequence_size_alphabet, round(entropy, 2), round(source_exc, 2), uniform]
     )
 
-    write(prob_str, mean_prob, uniform, entropy, source_exc)
+    write(text, prob_str, mean_prob, uniform, entropy, source_exc)
 
     # №4
     aray = []
@@ -125,7 +125,7 @@ def lossless_comp():
         [sequence_size_alphabet, round(entropy, 2), round(source_exc, 2), uniform]
     )
 
-    write(prob_str, mean_prob, uniform, entropy, source_exc)
+    write(text, prob_str, mean_prob, uniform, entropy, source_exc)
 
     # №5
     alphabet = ["в", "о", "5", "1", "9"]
@@ -164,7 +164,7 @@ def lossless_comp():
         [sequence_size_alphabet, round(entropy, 2), round(source_exc, 2), uniform]
     )
 
-    write(prob_str, mean_prob, uniform, entropy, source_exc)
+    write(text, prob_str, mean_prob, uniform, entropy, source_exc)
 
     # №6
     letter_list = ["в", "о"]
@@ -194,7 +194,7 @@ def lossless_comp():
         [sequence_size_alphabet, round(entropy, 2), round(source_exc, 2), uniform]
     )
 
-    write(prob_str, mean_prob, uniform, entropy, source_exc)
+    write(text, prob_str, mean_prob, uniform, entropy, source_exc)
 
     # №7
     elements = string.ascii_lowercase + string.digits
@@ -216,7 +216,7 @@ def lossless_comp():
         [sequence_size_alphabet, round(entropy, 2), round(source_exc, 2), uniform]
     )
 
-    write(prob_str, mean_prob, uniform, entropy, source_exc)
+    write(text, prob_str, mean_prob, uniform, entropy, source_exc)
 
     # №8
     os_8 = ["1"] * n_seq
@@ -237,7 +237,7 @@ def lossless_comp():
         [sequence_size_alphabet, round(entropy, 2), round(source_exc, 2), uniform]
     )
 
-    write(prob_str, mean_prob, uniform, entropy, source_exc)
+    write(text, prob_str, mean_prob, uniform, entropy, source_exc)
 
     text.close()
 
@@ -282,13 +282,12 @@ def lossless_comp():
     fig.savefig("Таблиця" + ".png")
 
 
-def write(prob_str, mean_prob, uniform, entropy, source_ex):
-    text = open("results_sequence.txt", "a")
+def write(text, prob_str, mean_prob, uniform, entropy, source_ex):
     text.write(f"Ймовірність появи символів: {prob_str}\n")
-    text.write(f"Середнє арифметичне ймовірності: {mean_prob}\n")
+    text.write(f"Середнє арифметичне ймовірності: {round(mean_prob, 2)}\n")
     text.write(f"Ймовірність розподілу символів: {uniform}\n")
-    text.write(f"Ентропія: {entropy}\n")
-    text.write(f"Надмірність джерела: {source_ex}\n")
+    text.write(f"Ентропія: {round(entropy, 2)}\n")
+    text.write(f"Надмірність джерела: {round(source_ex, 2)}\n")
     text.write("\n")
 
 
